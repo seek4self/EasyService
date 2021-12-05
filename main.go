@@ -7,9 +7,10 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
-	"server/utils"
 	"strings"
 	"text/template"
+
+	"github.com/see4self/server/utils"
 )
 
 var svcName = "./tms"
@@ -41,21 +42,22 @@ func main() {
 	dirs, files := utils.ReadDir()
 	for i, v := range dirs {
 		dirs[i] = strings.Replace(v, "templates", svcName, 1)
-		fmt.Println(dirs[i])
+		// fmt.Println(dirs[i])
+		utils.Mkdir(dirs[i])
 	}
 	newfiles := make([]string, len(files))
-	for i, v := range files {
-		newfiles[i] = strings.TrimRight(strings.Replace(v, "templates", svcName, 1), ".tpl")
-		fmt.Println(newfiles[i])
+	for i, file := range files {
+		newfiles[i] = strings.TrimRight(strings.Replace(file, "templates", svcName, 1), ".tpl")
+		// fmt.Println(newfiles[i])
 	}
-	for _, dir := range dirs {
-		utils.Mkdir(dir)
-	}
-	// utils.InitServiceDir(svcName)
 	tpl, names := newTemplate(files)
 	for i, v := range names {
-		f, _ := os.Create(newfiles[i])
-		if err := tpl.ExecuteTemplate(f, v, svc); err != nil {
+		f, err := os.Create(newfiles[i])
+		if err != nil {
+			fmt.Printf("create %s err %v\n", newfiles[i], err)
+			os.Exit(1)
+		}
+		if err = tpl.ExecuteTemplate(f, v, svc); err != nil {
 			fmt.Println("create template err", err)
 			os.Exit(1)
 		}
