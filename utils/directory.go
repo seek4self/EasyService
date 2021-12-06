@@ -23,7 +23,7 @@ func InitServiceDir(name string) {
 }
 
 func Mkdir(name string) {
-	err := os.MkdirAll(name, 0666)
+	err := os.MkdirAll(name, 0775)
 	if err != nil {
 		fmt.Println("mkdir err", err)
 		os.Exit(1)
