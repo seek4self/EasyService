@@ -1,55 +1,53 @@
-package response
+package api
 
 import (
 	"net/http"
-    
+
 	"github.com/gin-gonic/gin"
 )
 
-type Response struct {
-	Code int         `json:"code"`
-	Data interface{} `json:"data"`
-	Msg  string      `json:"msg"`
-}
-
+// code message
 const (
-	ERROR   = 7
-	SUCCESS = 0
+	ERROR   = 500
+	SUCCESS = 199 + iota
+	DBErr
+	InternalErr
 )
 
-func Result(code int, data interface{}, msg string, c *gin.Context) {
-	// 开始时间
-	c.JSON(http.StatusOK, Response{
-		code,
-		data,
-		msg,
-	})
+// codeMsg ...
+var codeMsg map[int]string = map[int]string{
+	SUCCESS:     "OK",
+	DBErr:       "DB operating Error",
+	InternalErr: "Service internal error",
 }
 
-func Ok(c *gin.Context) {
-	Result(SUCCESS, map[string]interface{}{}, "ok", c)
+var Resp = response{}
+
+type response struct{}
+
+// Data ...
+type Data struct {
+	Code int         `json:"code"`
+	Msg  string      `json:"message"`
+	Data interface{} `json:"data"`
 }
 
-func OkWithMessage(message string, c *gin.Context) {
-	Result(SUCCESS, map[string]interface{}{}, message, c)
+func (r response) Ok(c *gin.Context) {
+	c.JSON(http.StatusOK, Data{SUCCESS, codeMsg[SUCCESS], struct{}{}})
 }
 
-func OkWithData(data interface{}, c *gin.Context) {
-	Result(SUCCESS, data, "操作成功", c)
+func (r response) OkWithData(data interface{}, c *gin.Context) {
+	c.JSON(http.StatusOK, Data{SUCCESS, codeMsg[SUCCESS], data})
 }
 
-func OkWithDetailed(data interface{}, message string, c *gin.Context) {
-	Result(SUCCESS, data, message, c)
+func (r response) OkWithMsg(code int, msg string, c *gin.Context) {
+	c.JSON(http.StatusOK, Data{code, msg, struct{}{}})
 }
 
-func Fail(c *gin.Context) {
-	Result(ERROR, map[string]interface{}{}, "操作失败", c)
+func (r response) OkWithCode(code int, c *gin.Context) {
+	c.JSON(http.StatusOK, Data{code, codeMsg[code], struct{}{}})
 }
 
-func FailWithMessage(message string, c *gin.Context) {
-	Result(ERROR, map[string]interface{}{}, message, c)
-}
-
-func FailWithDetailed(data interface{}, message string, c *gin.Context) {
-	Result(ERROR, data, message, c)
+func (r response) BadRequest(msg string, c *gin.Context) {
+	c.JSON(http.StatusBadRequest, Data{400, msg, struct{}{}})
 }
