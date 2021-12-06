@@ -77,7 +77,9 @@ func main() {
 
 func newTemplate(tplFiles []string) (*template.Template, []string) {
 	var err error
-	tpl := template.New("service")
+	tpl := template.New("service").Funcs(template.FuncMap{
+		"upper": strings.ToUpper,
+	})
 	tpl, err = tpl.ParseFiles(tplFiles...)
 	if err != nil {
 		fmt.Println("template parse files err", err)
