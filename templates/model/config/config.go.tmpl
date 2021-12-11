@@ -1,0 +1,22 @@
+package config
+
+type Server struct {
+    HTTP HTTP `mapstructure:"http"`
+	Log  Log  `mapstructure:"log"`
+}
+
+type HTTP struct {
+    IP   string `mapstructure:"ip"`
+    Port int    `mapstructure:"port"`
+}
+
+// Log ...
+type Log struct {
+	Level      string `mapstructure:"level"`
+	Format     string `mapstructure:"format"`
+	Prefix     string `mapstructure:"prefix"`
+	Director   string `mapstructure:"director"`
+	ShowLine   bool   `mapstructure:"showLine"`
+	Color      bool   `mapstructure:"color"`
+	Stacktrace string `mapstructure:"stacktrace"`
+}

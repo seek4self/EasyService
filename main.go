@@ -64,15 +64,9 @@ func main() {
 		f.Close()
 	}
 
-	cmd := exec.Command("go", "mod", "tidy")
-	cmd.Dir = svcName
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = os.Stdout
-	err := cmd.Run()
-	if err != nil {
-		fmt.Printf("run %s err: %v\n", cmd.String(), err)
-		os.Exit(1)
-	}
+	runCMD([]string{"go", "mod", "tidy"})
+	runCMD([]string{"go", "get", "-u", "github.com/swaggo/swag/cmd/swag"})
+	runCMD([]string{os.Getenv("GOPATH") + "/bin/swag", "init"})
 }
 
 func newTemplate(tplFiles []string) (*template.Template, []string) {
@@ -90,6 +84,18 @@ func newTemplate(tplFiles []string) (*template.Template, []string) {
 		names[i] = filepath.Base(file)
 	}
 	return tpl, names
+}
+
+func runCMD(params []string) {
+	cmd := exec.Command(params[0], params[1:]...)
+	cmd.Dir = svcName
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	err := cmd.Run()
+	if err != nil {
+		fmt.Printf("run %s err: %v\n", cmd.String(), err)
+		os.Exit(1)
+	}
 }
 
 func testTemplate() {
