@@ -47,7 +47,7 @@ func main() {
 	}
 	newfiles := make([]string, len(files))
 	for i, file := range files {
-		newfiles[i] = strings.TrimRight(strings.Replace(file, "templates", svcName, 1), ".tpl")
+		newfiles[i] = strings.TrimSuffix(strings.Replace(file, "templates", svcName, 1), ".tpl")
 		// fmt.Println(newfiles[i])
 	}
 	tpl, names := newTemplate(files)
@@ -64,7 +64,7 @@ func main() {
 		f.Close()
 	}
 
-	cmd := exec.Command("go", []string{"mod tidy"}...)
+	cmd := exec.Command("go", "mod", "tidy")
 	cmd.Dir = svcName
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
