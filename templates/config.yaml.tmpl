@@ -4,6 +4,20 @@ http:
   port: 8080
 
 
+# mysql configuration
+mysql:
+  ip: "127.0.0.1"
+  port: 3306
+  dbname: "{{ .Name }}"
+  user: "root"
+  pass: "123456"
+  # 空闲中的最大连接数
+  max_idle_conns: 10
+  # 打开到数据库的最大连接数
+  max_open_conns: 5
+  # 开启 gorm 全局日志
+  debug: false
+
 # zap logger configuration
 log:
   # 可使用 "debug", "info", "warn", "error", "dpanic", "panic", "fatal",

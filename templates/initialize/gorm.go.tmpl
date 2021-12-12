@@ -1,1 +1,39 @@
 package initialize
+
+import (
+	"fmt"
+	"log"
+	"{{ .Name }}/global"
+
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+)
+
+func Mysql() {
+	conf := global.CONFIG.Mysql
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		conf.User,
+		conf.Pass,
+		conf.IP,
+		conf.Port,
+		conf.DBName)
+	// more gorm connect info in https://gorm.io/zh_CN/docs/connecting_to_the_database.html
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("connect mysql err", err)
+	}
+	log.println("connect mysql ok")
+
+	if conf.Debug {
+		db = db.Debug()
+	}
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxIdleConns(conf.MaxIdleConns)
+	sqlDB.SetMaxOpenConns(conf.MaxOpenConns)
+	initTables(db)
+	global.DB = db
+}
+
+func initTables(db *gorm.DB) {
+	db.AutoMigrate()
+}

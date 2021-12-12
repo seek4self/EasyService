@@ -47,7 +47,7 @@ func main() {
 	}
 	newfiles := make([]string, len(files))
 	for i, file := range files {
-		newfiles[i] = strings.TrimSuffix(strings.Replace(file, "templates", svcName, 1), ".tpl")
+		newfiles[i] = strings.TrimSuffix(strings.Replace(file, "templates", svcName, 1), ".tmpl")
 		// fmt.Println(newfiles[i])
 	}
 	tpl, names := newTemplate(files)
